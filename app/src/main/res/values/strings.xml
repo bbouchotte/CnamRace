@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">CnamRace</string>
+    <string name="title">CNAM Race</string>
+    <string name="init">Initialisation</string>
+    <string name="defaultGravityLimit">6</string>
+    <string name="validLimitGravity">OK</string>
+    <string name="limit">Limite : </string>
+</resources>

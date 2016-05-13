@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="bouchottebenjamin.cnamrace.MainActivity">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/init"
+        android:text="@string/init"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gravityTitle"
+
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/setGravity"
+        android:layout_below="@+id/init"
+        android:weightSum="100"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/limit"
+            android:gravity="center"
+            android:layout_weight="40"
+            />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/gravityLimit"
+            android:text="@string/defaultGravityLimit"
+            android:gravity="center"
+            android:inputType="number"
+            android:layout_weight="30"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/validLimitGravity"
+            android:text="@string/validLimitGravity"
+            android:layout_weight="30"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gravity"
+        android:text="0"
+        android:textSize="@dimen/gravityTV"
+        android:background="@color/green"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/setGravity"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tiltTV"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/gravity"
+        />
+
+</RelativeLayout>
