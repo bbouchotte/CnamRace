@@ -98,5 +98,16 @@
         android:layout_marginRight="20dp"
         android:gravity="center"
         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lightTV"
+        android:text="light"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/compassTV"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        />
 
 </RelativeLayout>

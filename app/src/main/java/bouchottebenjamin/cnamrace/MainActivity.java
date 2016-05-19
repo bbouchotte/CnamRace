@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView gravityTV;
     private TextView tiltTV;
     private TextView compassTV;
+    private TextView lightTV;
     private EditText gravityLimitTV;
 
     private int limitGravity;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     float[] geomagneticMatrix;
     float[] orientation;
     float[] orientationGyr;
+    float initialLight;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -47,11 +50,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     boolean geomagneticOK = false;
     boolean gyroscopeOK = false;
+    boolean lightOK = false;
 
     // Pour ne pas déclencher les toasts 30 millions de fois...
-    Toast  reverseToast;
+    Toast reverseToast;
     Toast gToast;
+    Toast tiltToast;
 
+    WindowManager.LayoutParams lp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gravityTV = (TextView) findViewById(R.id.gravity);
         tiltTV = (TextView) findViewById(R.id.tiltTV);
         compassTV = (TextView) findViewById(R.id.compassTV);
+        lightTV = (TextView) findViewById(R.id.lightTV);
         gravityLimitTV = (EditText) findViewById(R.id.gravityLimit);
 
         limitGravity = Integer.parseInt(String.valueOf(gravityLimitTV.getText()));
@@ -72,46 +79,54 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
 
-        reverseToast = Toast.makeText(this, "Attention! Vous êtes à l'envers.", Toast.LENGTH_SHORT);
-        gToast = Toast.makeText(this, gravity + "G: diminution des gaz", Toast.LENGTH_SHORT);
+        lp = getWindow().getAttributes();
+        initialLight = lp.screenBrightness;
+
+        reverseToast = Toast.makeText(getApplicationContext(), "Attention! Vous êtes à l'envers.", Toast.LENGTH_SHORT);
+        gToast = Toast.makeText(getApplicationContext(), gravity + "G: diminution des gaz", Toast.LENGTH_SHORT);
+        tiltToast = Toast.makeText(getApplicationContext(), "Moins vite dans les virages", Toast.LENGTH_SHORT);
 
         String infoCapteurs = "";
         if (accelerometer != null) {
-            Toast.makeText(this, "Un accéléromètre est disponible: " + accelerometer.getName(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Un accéléromètre est disponible: " + accelerometer.getName(), Toast.LENGTH_SHORT).show();
             infoCapteurs += "accéléromètre OK ";
         } else {
-            Toast.makeText(this, "Aucun accéléromètre n'est disponible.", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Aucun accéléromètre n'est disponible.", Toast.LENGTH_SHORT).show();
             infoCapteurs += "accéléromètre NOK";
         }
 
         if (geomagnetic != null) {
-            Toast.makeText(this, "Un magnétomètre est disponible: " + geomagnetic.getName(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Un magnétomètre est disponible: " + geomagnetic.getName(), Toast.LENGTH_LONG).show();
             geomagneticOK = true;
             infoCapteurs += "magnétomètre OK ";
         } else {
-            Toast.makeText(this, "Aucun magnétomètre n'est disponible.", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Aucun magnétomètre n'est disponible.", Toast.LENGTH_SHORT).show();
             tiltTV.setText("Aucun magnétomètre n'est disponible.");
             infoCapteurs += "magnétomètre NOK ";
         }
 
         if (gyroscope != null) {
-            Toast.makeText(this, "Un gyroscope est disponible: " + gyroscope.getName(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Un gyroscope est disponible: " + gyroscope.getName(), Toast.LENGTH_LONG).show();
             gyroscopeOK = true;
             infoCapteurs += "gyroscope OK ";
         } else {
-            Toast.makeText(this, "Aucun gyroscope n'est disponible.", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Aucun gyroscope n'est disponible.", Toast.LENGTH_SHORT).show();
             tiltTV.setText("Aucun magnétomètre n'est disponible.");
             infoCapteurs += "gyroscope NOK";
         }
 
         if (light != null) {
-            Toast.makeText(this, "Un gyroscope est disponible: " + gyroscope.getName(), Toast.LENGTH_LONG).show();
-            gyroscopeOK = true;
-            infoCapteurs += "gyroscope OK ";
+            //Toast.makeText(this, "Un capteur de lumière est disponible: " + gyroscope.getName(), Toast.LENGTH_LONG).show();
+            lightOK = true;
+            infoCapteurs += "light OK ";
+            Log.i("light - max", String.valueOf(light.getMaximumRange()));
+            Log.i("light - power", String.valueOf(light.getPower()));
+            Log.i("light - vendor", String.valueOf(light.getVendor()));
+            Log.i("light - version", String.valueOf(light.getVersion()));
         } else {
-            Toast.makeText(this, "Aucun gyroscope n'est disponible.", Toast.LENGTH_LONG).show();
-            tiltTV.setText("Aucun magnétomètre n'est disponible.");
-            infoCapteurs += "gyroscope NOK";
+            //Toast.makeText(this, "Aucun capteur de lumière n'est disponible.", Toast.LENGTH_LONG).show();
+            tiltTV.setText("Aucun capteur de lumière n'est disponible.");
+            infoCapteurs += " light NOK";
         }
 
         Log.i("infocapteur", infoCapteurs);
@@ -184,10 +199,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 } else {
                     tilt = Math.atan(x / (Math.sqrt(Math.pow(y, 2) + Math.pow(z, 2)))); // inclinaison axe x
                     tilt = Math.round(tilt * 180 / Math.PI);  // conversion rad en deg
+
+                    //autre solution
+                    double norm_Of_g = Math.sqrt(x * x + y * y + z * z);
+                    tilt = (int) Math.round( Math.toDegrees(Math.acos( x / norm_Of_g ))) - 90;
                 }
                 tiltTV.setText( "" + tilt);
                 if (tilt > 5 || tilt < -5) {
-                    tiltTV.setText("Moins vite dans les virages");
+                    if (!tiltToast.getView().isShown()) {
+                        tiltToast.show();
+                        lp.screenBrightness = 1.0f;
+                        getWindow().setAttributes(lp);
+                    }
+                } else {
+                    lp.screenBrightness = initialLight;
+                    getWindow().setAttributes(lp);
                 }
                 if (y < -8) {
                     if (!reverseToast.getView().isShown()) {
@@ -201,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             case Sensor.TYPE_GYROSCOPE:
                 break;
             case Sensor.TYPE_LIGHT:
-
+                lightTV.setText((int) event.values[0]);
                 break;
             default:
                 break;
