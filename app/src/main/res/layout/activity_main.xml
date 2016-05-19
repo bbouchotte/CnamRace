@@ -76,8 +76,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tiltTV"
+        android:text="0"
+        android:textSize="@dimen/gravityTV"
+        android:background="@color/green"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/gravity"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/compassTV"
+        android:text="N"
+        android:textSize="@dimen/gravityTV"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/tiltTV"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
         />
 
 </RelativeLayout>
